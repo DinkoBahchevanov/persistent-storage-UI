@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Optional } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Product } from './product';
 import { ProductService } from './product.service';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,8 @@ import { ProductService } from './product.service';
 
 export class AppComponent implements OnInit {
   public products: Product[];
+  public editProduct?: Product;
+  public deleteProduct: Product;
 
   constructor(private productService: ProductService){ this.products = [];}
 
@@ -38,6 +41,56 @@ export class AppComponent implements OnInit {
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
+      }
+    );
+  }
+
+  public onOpenModal(product: Product, mode: string): void {
+    const container = document.getElementById('main-container');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.style.display = 'none';
+    button.setAttribute('data-toggle', 'modal');
+    if (mode === 'add') {
+      button.setAttribute('data-target', '#addProductModal');
+    }
+    if (mode === 'edit') {
+      this.editProduct = product;
+      button.setAttribute('data-target', '#updateProductModal');
+    }
+    if (mode === 'delete') {
+      this.deleteProduct = product;
+      button.setAttribute('data-target', '#deleteProductModal');
+    }
+    container.appendChild(button);
+    button.click();
+  }
+
+  public searchProducts(id: string): void {
+    console.log(id);
+    const results: Product[] = [];
+    for (const product of this.products) {
+      if (product.id.toLowerCase().indexOf(id.toLowerCase()) !== -1) {
+        results.push(product);
+      }
+    }
+    this.products = results;
+    if (results.length === 0 || !id) {
+      this.getProducts();
+    }
+  }
+
+  public onAddProduct(addForm: NgForm): void {
+    document.getElementById('add-product-form').click();
+    this.productService.addProduct(addForm.value).subscribe(
+      (response: Product) => {
+        console.log(response);
+        this.getProducts();
+        addForm.reset();
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);
+        addForm.reset();
       }
     );
   }
