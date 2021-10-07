@@ -54,10 +54,6 @@ export class AppComponent implements OnInit {
     if (mode === 'add') {
       button.setAttribute('data-target', '#addProductModal');
     }
-    if (mode === 'edit') {
-      this.editProduct = product;
-      button.setAttribute('data-target', '#updateProductModal');
-    }
     if (mode === 'delete') {
       this.deleteProduct = product;
       button.setAttribute('data-target', '#deleteProductModal');
