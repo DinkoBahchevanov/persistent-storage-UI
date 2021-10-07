@@ -1,26 +1,26 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Product } from './product';
+import { Pair } from './pair';
 import { environment } from 'src/environments/environment'; 
 
 @Injectable({
   providedIn: 'root'
 })
-export class ProductService {
+export class PairService {
   private apiServerUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) { }
 
-  public getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiServerUrl}/api/products`);
+  public getPairs(): Observable<Pair[]> {
+    return this.http.get<Pair[]>(`${this.apiServerUrl}/api/products`);
   }
 
-  public addProduct(product: Product): Observable<Product> {
-    return this.http.post<Product>(`${this.apiServerUrl}/api/products`, product);
+  public addPair(product: Pair): Observable<Pair> {
+    return this.http.post<Pair>(`${this.apiServerUrl}/api/products`, product);
   }
 
-  public deleteProduct(productId: string): Observable<void> {
+  public deletePair(productId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiServerUrl}/api/products/${productId}`);
   }
 }

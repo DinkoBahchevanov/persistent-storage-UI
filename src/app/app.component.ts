@@ -1,7 +1,7 @@
 import { Component, OnInit, Optional } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Product } from './product';
-import { ProductService } from './product.service';
+import { Pair } from './pair';
+import { PairService } from './pair.service';
 import { NgForm } from '@angular/forms';
 
 @Component({
@@ -11,19 +11,19 @@ import { NgForm } from '@angular/forms';
 })
 
 export class AppComponent implements OnInit {
-  public products: Product[];
-  public editProduct?: Product;
-  public deleteProduct: Product;
+  public products: Pair[];
+  public editProduct?: Pair;
+  public deleteProduct: Pair;
 
-  constructor(private productService: ProductService){ this.products = [];}
+  constructor(private productService: PairService){ this.products = [];}
 
   ngOnInit() {
     this.getProducts();
   }
 
   public getProducts(): void {
-    this.productService.getProducts().subscribe(
-      (response: Product[]) => {
+    this.productService.getPairs().subscribe(
+      (response: Pair[]) => {
         this.products = response;
         console.log(this.products);
       },
@@ -33,8 +33,8 @@ export class AppComponent implements OnInit {
     );
   }
 
-  public onDeleteProduct(productId: string): void {
-    this.productService.deleteProduct(productId).subscribe(
+  public onDeletePair(productId: string): void {
+    this.productService.deletePair(productId).subscribe(
       (response: void) => {
         console.log(response);
         this.getProducts();
@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
     );
   }
 
-  public onOpenModal(product: Product, mode: string): void {
+  public onOpenModal(product: Pair, mode: string): void {
     const container = document.getElementById('main-container');
     const button = document.createElement('button');
     button.type = 'button';
@@ -62,11 +62,11 @@ export class AppComponent implements OnInit {
     button.click();
   }
 
-  public searchProducts(id: string): void {
+  public searchPairs(id: string): void {
     console.log(id);
-    const results: Product[] = [];
+    const results: Pair[] = [];
     for (const product of this.products) {
-      if (product.id.toLowerCase().indexOf(id.toLowerCase()) !== -1) {
+      if (product.key.toLowerCase().indexOf(id.toLowerCase()) !== -1) {
         results.push(product);
       }
     }
@@ -76,10 +76,10 @@ export class AppComponent implements OnInit {
     }
   }
 
-  public onAddProduct(addForm: NgForm): void {
+  public onAddPair(addForm: NgForm): void {
     document.getElementById('add-product-form').click();
-    this.productService.addProduct(addForm.value).subscribe(
-      (response: Product) => {
+    this.productService.addPair(addForm.value).subscribe(
+      (response: Pair) => {
         console.log(response);
         this.getProducts();
         addForm.reset();

@@ -1,19 +1,19 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" style="color:white;">Products</a>
+  <a class="navbar-brand" style="color:white;">Pairs</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
   <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarColor02">
      <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-           <a class="nav-link" (click)="onOpenModal(null, 'add')">Add Product <span class="sr-only">(current)</span></a>
+           <a class="nav-link" (click)="onOpenModal(null, 'add')">Add Pair<span class="sr-only">(current)</span></a>
         </li>
      </ul>
      <form class="form-inline my-2 my-lg-0">
-        <input type="search" (ngModelChange)="searchProducts(key.value)" #key="ngModel" ngModel
-         name="id" id="searchId" class="form-control mr-sm-2" placeholder="Search products..." required>
+        <input type="search" (ngModelChange)="searchPairs(key.value)" #key="ngModel" ngModel
+         name="id" id="searchId" class="form-control mr-sm-2" placeholder="Persistent storage..." required>
      </form>
   </div>
 </nav>
@@ -27,7 +27,7 @@
                         <a href=""><img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="" class="img-fluid rounded-circle w-60"></a>
                     </div>
                     <div class="col-6 card-title align-self-center mb-0">
-                        <h5>{{product.id}} {{product.value}}</h5>
+                        <h5>{{product.key}} {{product.value}}</h5>
                     </div>
                 </div>
             
@@ -51,10 +51,10 @@
              </button>
           </div>
           <div class="modal-body">
-             <p>Are you sure you want to delete product {{deleteProduct?.id}}?</p>
+             <p>Are you sure you want to delete product {{deleteProduct?.key}}?</p>
              <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                <button (click)="onDeleteProduct(deleteProduct?.id)" class="btn btn-danger" data-dismiss="modal">Yes</button>
+                <button (click)="onDeletePair(deleteProduct?.key)" class="btn btn-danger" data-dismiss="modal">Yes</button>
              </div>
           </div>
        </div>
@@ -66,16 +66,16 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
          <div class="modal-header">
-            <h5 class="modal-title" id="addProductModalLabel" style="cursor: pointer;">Add Product</h5>
+            <h5 class="modal-title" id="addProductModalLabel" style="cursor: pointer;">Add Pair</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
          </div>
          <div class="modal-body">
-            <form #addForm="ngForm" (ngSubmit)="onAddProduct(addForm)">
+            <form #addForm="ngForm" (ngSubmit)="onAddPair(addForm)">
             <div class="form-group">
-               <label for="id">Key</label>
-               <input type="text" ngModel name="id" class="form-control" id="id" placeholder="Key" required>
+               <label for="key">Key</label>
+               <input type="text" ngModel name="key" class="form-control" id="id" placeholder="Key" required>
             </div>
             <div class="form-group">
                <label for="value">Value</label>
@@ -83,7 +83,7 @@
             </div>
             <div class="modal-footer">
                <button type="button" id="add-product-form" class="btn btn-secondary" data-dismiss="modal">Close</button>
-               <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary">Add Product</button>
+               <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary">Add Pair</button>
             </div>
             </form>
          </div>
