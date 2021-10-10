@@ -13,14 +13,14 @@ export class PairService {
   constructor(private http: HttpClient) { }
 
   public getPairs(): Observable<Pair[]> {
-    return this.http.get<Pair[]>(`${this.apiServerUrl}/api/products`);
+    return this.http.get<Pair[]>(`${this.apiServerUrl}/api/pairs`);
   }
 
-  public addPair(product: Pair): Observable<Pair> {
-    return this.http.post<Pair>(`${this.apiServerUrl}/api/products`, product);
+  public addPair(pair: Pair): Observable<Pair> {
+    return this.http.post<Pair>(`${this.apiServerUrl}/api/pairs`, pair);
   }
 
-  public deletePair(productId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiServerUrl}/api/products/${productId}`);
+  public deletePair(pairId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiServerUrl}/api/pairs/${pairId}`);
   }
 }

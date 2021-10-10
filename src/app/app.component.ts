@@ -3,6 +3,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Pair } from './pair';
 import { PairService } from './pair.service';
 import { NgForm } from '@angular/forms';
+import {Stomp} from '@stomp/stompjs';
+import * as SockJS from 'sockjs-client';
 
 @Component({
   selector: 'app-root',
@@ -11,21 +13,53 @@ import { NgForm } from '@angular/forms';
 })
 
 export class AppComponent implements OnInit {
-  public products: Pair[];
-  public editProduct?: Pair;
-  public deleteProduct: Pair;
+  public pairs: Pair[];
+  public deletePair: Pair;
+  private stompClient = null;
+  disabled = true;
 
-  constructor(private productService: PairService){ this.products = [];}
+  setConnected(connected: boolean) {
+    this.disabled = !connected;
+    if (connected) {
+
+    }
+  }
+
+    connect() {
+    const socket = new SockJS('http://localhost:8080/chat');
+    this.stompClient = Stomp.over(socket);
+
+    const _this = this;
+    this.stompClient.connect({}, function (frame) {
+      _this.setConnected(true);
+      console.log('Connected: ' + frame);
+
+      _this.stompClient.subscribe('/topic/messages', function (pairOutput) {
+        console.log("going to receive info from the webSocket");
+        console.log(pairOutput.body);
+        _this.showMessageOutput(JSON.parse(pairOutput.body));
+      });
+    });
+  }
+
+showMessageOutput(messageOutput) {
+  console.log("This is the message to show: " + messageOutput);
+  this.getpairs();
+}
+
+  constructor(private pairservice: PairService){ this.pairs = [];}
 
   ngOnInit() {
-    this.getProducts();
+    this.getpairs();
+    this.connect();
   }
 
-  public getProducts(): void {
-    this.productService.getPairs().subscribe(
+  public getpairs(): void {
+    this.pairservice.getPairs().subscribe(
       (response: Pair[]) => {
-        this.products = response;
-        console.log(this.products);
+        // this.webSocketApi._connect();
+        this.pairs = response;
+        console.log(this.pairs);
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -33,11 +67,12 @@ export class AppComponent implements OnInit {
     );
   }
 
-  public onDeletePair(productId: string): void {
-    this.productService.deletePair(productId).subscribe(
+  public onDeletePair(pairId: string): void {
+    this.pairservice.deletePair(pairId).subscribe(
       (response: void) => {
+        this.sendMessage(this.deletePair);
         console.log(response);
-        this.getProducts();
+        this.getpairs();
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -45,18 +80,18 @@ export class AppComponent implements OnInit {
     );
   }
 
-  public onOpenModal(product: Pair, mode: string): void {
+  public onOpenModal(pair: Pair, mode: string): void {
     const container = document.getElementById('main-container');
     const button = document.createElement('button');
     button.type = 'button';
     button.style.display = 'none';
     button.setAttribute('data-toggle', 'modal');
     if (mode === 'add') {
-      button.setAttribute('data-target', '#addProductModal');
+      button.setAttribute('data-target', '#addPairModal');
     }
     if (mode === 'delete') {
-      this.deleteProduct = product;
-      button.setAttribute('data-target', '#deleteProductModal');
+      this.deletePair = pair;
+      button.setAttribute('data-target', '#deletePairModal');
     }
     container.appendChild(button);
     button.click();
@@ -65,23 +100,24 @@ export class AppComponent implements OnInit {
   public searchPairs(id: string): void {
     console.log(id);
     const results: Pair[] = [];
-    for (const product of this.products) {
-      if (product.key.toLowerCase().indexOf(id.toLowerCase()) !== -1) {
-        results.push(product);
+    for (const pair of this.pairs) {
+      if (pair.key.toLowerCase().indexOf(id.toLowerCase()) !== -1) {
+        results.push(pair);
       }
     }
-    this.products = results;
+    this.pairs = results;
     if (results.length === 0 || !id) {
-      this.getProducts();
+      this.getpairs();
     }
   }
 
   public onAddPair(addForm: NgForm): void {
-    document.getElementById('add-product-form').click();
-    this.productService.addPair(addForm.value).subscribe(
+    document.getElementById('add-pair-form').click();
+    this.pairservice.addPair(addForm.value).subscribe(
       (response: Pair) => {
-        console.log(response);
-        this.getProducts();
+        this.sendMessage(response);
+        // console.log("The response is: " + JSON.stringify(response));
+        this.getpairs();
         addForm.reset();
       },
       (error: HttpErrorResponse) => {
@@ -90,4 +126,13 @@ export class AppComponent implements OnInit {
       }
     );
   }
+
+  sendMessage(pair: Pair) {
+    this.stompClient.send("/app/chat", {}, 
+      JSON.stringify({'key':pair.key, 'value':pair.value}));
+}
+
+  // handleMessage(pairs){
+  //   this.pairs = pairs;
+  // }
 }
